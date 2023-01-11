@@ -33,21 +33,39 @@
                 android:textSize="30sp" />
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/ll_body"
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedsv_home_fragments"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_hint"
+            <LinearLayout
+                android:id="@+id/ll_body"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clipToPadding="false"
-                android:paddingBottom="120dp"
-                android:scrollbarStyle="outsideOverlay" />
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-        </LinearLayout>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_hint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:scrollbarStyle="outsideOverlay" />
+
+                <Button
+                    android:id="@+id/btn_export"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/ghost_button"
+                    android:stateListAnimator="@animator/press_animation"
+                    android:text="@string/export"
+                    android:textColor="@color/colorAccent" />
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
 
     </LinearLayout>
 

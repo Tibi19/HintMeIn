@@ -1,8 +1,9 @@
 package com.tam.hintmein
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tam.hintmein.adapter.HintAdapter
@@ -10,6 +11,10 @@ import com.tam.hintmein.adapter.HintHolderMover
 import com.tam.hintmein.databinding.ActivityMainBinding
 import com.tam.hintmein.popup.InputPopupBuilder
 import com.tam.hintmein.utils.HintEnvironment
+import com.tam.hintmein.utils.getHintsCsvName
+import java.io.IOException
+
+const val CREATE_HINTS_CSV_REQUEST_CODE = 111
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         setupHintEnvironment()
         setupHintRecycler()
         setupAddHint()
+        setupExport()
     }
 
     private fun setupHintEnvironment() {
@@ -54,6 +60,32 @@ class MainActivity : AppCompatActivity() {
     )
 
     private fun setupAddHint() = binding.fabAddHint.setOnClickListener { InputPopupBuilder.addHint(hintEnvironment) }
+
+    private fun setupExport() =
+        binding.btnExport.setOnClickListener {
+            val exportIntent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "text/csv"
+                putExtra(Intent.EXTRA_TITLE, getHintsCsvName())
+            }
+            startActivityForResult(exportIntent, CREATE_HINTS_CSV_REQUEST_CODE)
+        }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode != CREATE_HINTS_CSV_REQUEST_CODE) return
+        val hintsCsvContent = hintEnvironment.viewModel.getHintsAsCsvContent() ?: return
+
+        data?.data?.let { intentUri ->
+            try {
+                val outputStream = contentResolver.openOutputStream(intentUri)
+                outputStream?.write(hintsCsvContent.toByteArray())
+                outputStream?.close()
+            } catch (exception: IOException) {
+                exception.printStackTrace()
+            }
+        }
+    }
 
     // Update the moved hints in onPause
     // If done while the app is being used, there might be UI bugs
